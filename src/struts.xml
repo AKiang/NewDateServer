@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <constant name="struts.i18n.encoding" value="utf-8"/>
+<!-- 	<constant name="struts.action.extension" value="do,action,in" /> -->
+	<package name="struts2" extends="json-default" namespace="/">
+		<action name="userAction_*" class="com.soryin.action.UserAction"
+			method="{1}">
+			<result type="json" name="*">  
+                <param name="root">jsonResult</param>  
+            </result>
+			<result name="sinaLoginPage" type="redirect">${url}</result>
+		</action>
+	</package>
+
+	<package name="default" extends="struts-default" namespace="/">
+		<action name="*" class="com.soryin.action.UserAction"
+			method="{1}">
+			<result name="error">/error.jsp</result>
+			<result name="callback">/user.jsp</result>
+		</action>
+	</package>
+
+	<package name="event" extends="struts-default" namespace="/event">
+		<default-action-ref name="list"></default-action-ref>
+		<action name="eventAction_*" class="com.soryin.action.EventAction"
+			method="{1}">
+			<result name="translation">${request.contextPath}/translation.jsp</result>
+			<result name="error">${request.contextPath}/error.jsp</result>
+			<result name="list">${request.contextPath}/event/list.jsp</result>
+			<result name="show">${request.contextPath}/event/show.jsp</result>
+			<result name="updateEvent">${request.contextPath}/event/json.jsp</result>
+		</action>
+	</package>
+</struts>

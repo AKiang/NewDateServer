@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- 添加或更新新活动的时候是否进行翻译 -->
+	<c name="translaction">true</c>
+	<!-- 定时自动更新热门类型排行 -->
+	<c name="autoUpdateHottype">1</c><!-- 周期性更新 单位h 或者具体时间 12:00  为0时则不会自动更新-->
+	<c name="autoUpdateHotTag">true</c><!-- 自动更新热门标签 -->
+</config>
