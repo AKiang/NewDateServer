@@ -1,17 +1,12 @@
 package com.soryin.action;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.alibaba.fastjson.JSON;
 import com.opensymphony.xwork2.ActionSupport;
 import com.soryin.common.SoryinJsonUtil;
-import com.soryin.entity.UserAccessRecord;
 import com.soryin.entity.UserInfo;
 import com.soryin.enumeration.SoryinEnum.State;
 import com.soryin.service.UserInfoService;
-import com.soryin.vo.UserRecordVO;
 import com.soryin.vo.UserRequestParameter;
 
 /**
@@ -175,7 +170,11 @@ public class UserAction extends ActionSupport {
 		Object result=userInfoService.syncUserDate(userRequestParameter);
 		if(result.getClass().equals(String.class)){
 			String resultStr=SoryinJsonUtil.convertToFormatStr(result.toString());
-			resultData=SoryinJsonUtil.addState(resultStr, State.Success);
+			if(resultStr.contains("complete")){
+				resultData=SoryinJsonUtil.addState(resultStr, State.Success);
+			}else {
+				resultData=SoryinJsonUtil.addState(resultStr, State.Error);
+			}
 		}else {
 			resultData=SoryinJsonUtil.addState(result, State.Success);
 		}

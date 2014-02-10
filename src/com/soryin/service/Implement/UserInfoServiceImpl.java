@@ -173,8 +173,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public Object syncUserDate(UserRequestParameter parameter) {
 		UserInfo user=userInfoDao.findUserByAccount(parameter.getUid());
+		if(user==null){
+			return "找不到用户:"+parameter.getUid();
+		}
+		
 		if(user.getSyncTime()==null||user.getSyncTime().before(parameter.getSyncTime())&&parameter.getRecords()!=null&&parameter.getRecords().size()>0){
 			Set<UserAccessRecord> recordList=new HashSet<UserAccessRecord>();
+			if(parameter.getRecords()==null){
+				return "服务器上没有找到记录";
+			}
+			
 			for(int i=0;i<parameter.getRecords().size();i++){
 				UserRecordVO vo=parameter.getRecords().get(i);
 				UserAccessRecord uar=new UserAccessRecord();
