@@ -42,7 +42,7 @@ public class UserInfo implements Serializable {
 	private GroupManager groupManager;
 	private long level;//级别
 	private Date syncTime;//最后同步时间
-
+	
 	public Date getSyncTime() {
 		return syncTime;
 	}
