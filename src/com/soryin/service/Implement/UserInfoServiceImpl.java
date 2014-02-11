@@ -184,24 +184,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (user == null) {
 			return "找不到用户:" + parameter.getUid();
 		}
-
-		if ((user.getSyncTime() == null || user.getSyncTime().before(
-				parameter.getSyncTime()))
+		if ((user.getSyncTime() == null || (parameter.getSyncTime()!=null&&user.getSyncTime().before(
+				parameter.getSyncTime())))
 				&& parameter.getRecordContent() != null
 				&& parameter.getRecordContent().length() > 0) {
 			Set<UserAccessRecord> recordList = new HashSet<UserAccessRecord>();
-			System.out.println("__"+parameter.getRecordContent());
 			// 123123[_]2014-09-09 12:121[/br]123123[_]2014-09-09 12:121[/br]
-			String[] recordVOStr = parameter.getRecordContent().split("[/br]");
+			String[] recordVOStr = parameter.getRecordContent().split("<br>");
 			for (String str : recordVOStr) {
-				System.out.println("______"+recordVOStr.length);
 				UserRecordVO recordVO = new UserRecordVO();
-				String[] result = str.split("[_]");
+				String[] result = str.split("<_>");
 				recordVO.setEventKey(result[0]);// id
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date date=null;
 				try {
-					System.out.println(result[1]);
 					date = sdf.parse(result[1]);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -215,24 +211,30 @@ public class UserInfoServiceImpl implements UserInfoService {
 				uar.setAccessDate(recordVO.getAccessDate());
 				recordList.add(uar);
 			}
+			System.out.println("上传数据到服务器成功");
 			if (userRecordService.deleteAllRecordByAccount(user.getAccount())) {
 				user.setUserAccessRecord(recordList);
-				userInfoDao.save(user);
+				user.setSyncTime(parameter.getSyncTime());
+				userInfoDao.update(user);
 				return "complete";
 			} else {
 				return "服务器异常";
 			}
 
 		} else if ((parameter.getSyncTime() == null || user.getSyncTime()
-				.after(user.getSyncTime()))
+				.after(parameter.getSyncTime()))
 				&& user.getUserAccessRecord().size() > 0) {
 			Set<UserAccessRecord> recordList = user.getUserAccessRecord();
 			for (UserAccessRecord userAccessRecord : recordList) {
 				userAccessRecord.getEventKey();
-				System.out.println("___good! haved data");
+				System.out.println("下载到手机成功");
 			}
 			return recordList;
 		}
+		System.out.println("没有同步"+user.getSyncTime()+"___"+parameter.getSyncTime()+"||||"+user.getSyncTime().getTime()+"||||"+parameter.getSyncTime().getTime());
+		System.out.println("-----");
+		System.out.println((user.getSyncTime().before(parameter.getSyncTime()))+"__"+(user.getSyncTime().after(parameter.getSyncTime())));
+		
 		return "failed";
 	}
 

@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 
 @Entity
 public class UserAccessRecord implements Serializable{
@@ -22,6 +24,7 @@ public class UserAccessRecord implements Serializable{
 	private Date accessDate;//记录的访问时间
 	private UserInfo userInfo;
 	@ManyToOne
+	@JSONField(serialize=false)
 	public UserInfo getUserInfo() {
 		return userInfo;
 	}
