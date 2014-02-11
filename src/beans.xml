@@ -91,6 +91,8 @@
 	<bean id="countService" class="com.soryin.service.Implement.CountServiceImpl"></bean>
 
 	<bean id="dashboardService" class="com.soryin.service.Implement.DashboardServiceImpl"></bean>
+	
+	<bean id="userRecordService" class="com.soryin.service.Implement.UserRecordServerImplement"></bean>
 
 	<bean id="bdtUtil" class="com.soryin.common.BaiduTranslactionUtil">
 		<constructor-arg index="0" value="MbtN6VL5LdmnUVytE9wDMK3a"></constructor-arg>

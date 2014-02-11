@@ -31,6 +31,7 @@ public interface BaseDAO<T> {
 
 	public List<?> findByHQL(String hql, Object... params);
 
+	public boolean updateByHQL(String hql, Object... params);
 	
 	public List<?> findListForPage(final String condition, final int offset,
 		    final int length);

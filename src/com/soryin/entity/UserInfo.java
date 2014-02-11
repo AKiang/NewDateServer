@@ -67,7 +67,7 @@ public class UserInfo implements Serializable {
 	private Set<UserAccessRecord> userAccessRecord;//用户访问记录表
 
 	@JSONField(serialize=false)
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userInfo")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "userInfo")
 	public Set<UserAccessRecord> getUserAccessRecord() {
 		return userAccessRecord;
 	}

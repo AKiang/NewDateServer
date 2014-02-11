@@ -18,6 +18,7 @@ import com.soryin.entity.UserAccessRecord;
 import com.soryin.entity.UserInfo;
 import com.soryin.enumeration.SoryinEnum.UserLoginType;
 import com.soryin.service.UserInfoService;
+import com.soryin.service.UserRecordService;
 import com.soryin.vo.UserActionRquestType;
 import com.soryin.vo.UserRecordVO;
 import com.soryin.vo.UserRequestParameter;
@@ -34,7 +35,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public void setUserInfoDao(UserInfoDao userInfoDao) {
 		this.userInfoDao = userInfoDao;
 	}
+	
+	private UserRecordService userRecordService;
 
+
+	public UserRecordService getUserRecordService() {
+		return userRecordService;
+	}
+
+	public void setUserRecordService(UserRecordService userRecordService) {
+		this.userRecordService = userRecordService;
+	}
 
 	public UserInfo userLogin(UserRequestParameter parames) {
 		
@@ -177,7 +188,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return "找不到用户:"+parameter.getUid();
 		}
 		
-		if(user.getSyncTime()==null||user.getSyncTime().before(parameter.getSyncTime())&&parameter.getRecords()!=null&&parameter.getRecords().size()>0){
+		if((user.getSyncTime()==null||user.getSyncTime().before(parameter.getSyncTime()))&&parameter.getRecords()!=null&&parameter.getRecords().size()>0){
 			Set<UserAccessRecord> recordList=new HashSet<UserAccessRecord>();
 			if(parameter.getRecords()==null){
 				return "服务器上没有找到记录";
@@ -192,11 +203,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 				uar.setAccessDate(vo.getAccessDate());
 				recordList.add(uar);
 			}
-			user.setUserAccessRecord(recordList);
-			userInfoDao.save(user);
-			return "complete";
-		}else if(parameter.getSyncTime()==null||user.getSyncTime().after(user.getSyncTime())){
+			if(userRecordService.deleteAllRecordByAccount(user.getAccount())){
+				user.setUserAccessRecord(recordList);
+				userInfoDao.save(user);
+				return "complete";
+			}else {
+				return "服务器异常";
+			}
+
+		}else if((parameter.getSyncTime()==null||user.getSyncTime().after(user.getSyncTime()))&&user.getUserAccessRecord().size()>0){
 			Set<UserAccessRecord> recordList=user.getUserAccessRecord();
+			for (UserAccessRecord userAccessRecord : recordList) {
+				userAccessRecord.getEventKey();
+				System.out.println("___good! haved data");
+			}
 			return recordList;
 		}
 		return "failed";

@@ -72,6 +72,20 @@ public class BaseDAOImpl<T> implements BaseDAO<T> {
 		this.getSession().getTransaction().commit();
 		return list;
 	}
+	
+	public boolean updateByHQL(String hql, Object... params){
+		this.getSession().beginTransaction();
+		Query query = this.getSession().createQuery(hql);
+		for (int i = 0; params != null && i < params.length; i++) {
+			query.setParameter(i, params[i]);
+		}
+		int result=query.executeUpdate();
+		this.getSession().getTransaction().commit();
+		if(result>0){
+			return false;
+		}
+		return true;
+	}
 
 	public List<T> findListForPage(String condition, int offset, int length) {
 		String hql="from "+clazz.getSimpleName() ;
