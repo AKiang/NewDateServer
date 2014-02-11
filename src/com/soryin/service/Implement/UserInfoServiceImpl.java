@@ -1,5 +1,7 @@
 package com.soryin.service.Implement;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,7 +27,6 @@ import com.soryin.vo.UserRequestParameter;
 
 public class UserInfoServiceImpl implements UserInfoService {
 
-
 	private UserInfoDao userInfoDao;
 
 	public UserInfoDao getUserInfoDao() {
@@ -35,9 +36,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public void setUserInfoDao(UserInfoDao userInfoDao) {
 		this.userInfoDao = userInfoDao;
 	}
-	
-	private UserRecordService userRecordService;
 
+	private UserRecordService userRecordService;
 
 	public UserRecordService getUserRecordService() {
 		return userRecordService;
@@ -48,25 +48,27 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	public UserInfo userLogin(UserRequestParameter parames) {
-		
-		if(this.checkContainUser(parames.getUid())){
-			Map<String, Object> session = ActionContext.getContext().getSession();
-			UserInfo user=this.userInfoDao.findUserByAccount(parames.getUid());
+
+		if (this.checkContainUser(parames.getUid())) {
+			Map<String, Object> session = ActionContext.getContext()
+					.getSession();
+			UserInfo user = this.userInfoDao
+					.findUserByAccount(parames.getUid());
 			session.put("UserLoginInfo", user);
 			return user;
-		}else {
-			UserInfo user=new UserInfo();
+		} else {
+			UserInfo user = new UserInfo();
 			user.setAccount(parames.getUid());
 			user.setName(parames.getUserName());
 			user.setLevel(1);
-			user=this.register(user);
+			user = this.register(user);
 			return user;
 		}
 	}
 
 	@Override
 	public UserInfo register(UserInfo user) {
-		if(this.getUserLoginType(user.getAccount())==UserLoginType.Unknown){
+		if (this.getUserLoginType(user.getAccount()) == UserLoginType.Unknown) {
 			return null;
 		}
 		Map<String, Object> session = ActionContext.getContext().getSession();
@@ -80,29 +82,26 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoDao.findUserByAccount(user.getAccount());
 	}
 
-
 	/**
 	 * 检测表中是否包含某账户
 	 * 
-	 * @param account 缩影账号
+	 * @param account
+	 *            缩影账号
 	 * @return boolean
 	 */
 	public boolean checkContainUser(String account) {
-		UserLoginType loginType=this.getUserLoginType(account);
-		if(loginType==UserLoginType.Unknown){
+		UserLoginType loginType = this.getUserLoginType(account);
+		if (loginType == UserLoginType.Unknown) {
 			System.out.println("未知的登录类型");
 			return false;
-		}else {
-		   Object o=userInfoDao.findUserByAccount(account);
-		 	if(o==null){
+		} else {
+			Object o = userInfoDao.findUserByAccount(account);
+			if (o == null) {
 				return false;
 			}
 			return true;
 		}
 	}
-	
-
-
 
 	@Override
 	public Object syncUserSettingData(UserRequestParameter parameter) {
@@ -116,12 +115,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return null;
 	}
 
-	
-	private UserLoginType getUserLoginType(String soryinid)
-	{
-		if(soryinid.contains("sinaWB:")){
+	private UserLoginType getUserLoginType(String soryinid) {
+		if (soryinid.contains("sinaWB:")) {
 			return UserLoginType.SinaWB;
-		}else if(soryinid.contains("tencentWB:")){
+		} else if (soryinid.contains("tencentWB:")) {
 			return UserLoginType.TencentWB;
 		}
 		return UserLoginType.Unknown;
@@ -134,14 +131,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public Long addUserLevel(String account) {
-	if(this.getUserLoginType(account)==UserLoginType.Unknown){
-		return null;
-	}
-		UserInfo user=userInfoDao.findUserByAccount(account);
-		if(user==null){
+		if (this.getUserLoginType(account) == UserLoginType.Unknown) {
 			return null;
 		}
-		user.setLevel(user.getLevel()+1);
+		UserInfo user = userInfoDao.findUserByAccount(account);
+		if (user == null) {
+			return null;
+		}
+		user.setLevel(user.getLevel() + 1);
 		try {
 			userInfoDao.update(user);
 		} catch (Exception e) {
@@ -154,19 +151,19 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public boolean checkUserLoginState(String account) {
 		Map<String, Object> session = ActionContext.getContext().getSession();
-		if(session.get("UserLoginInfo")==null){
+		if (session.get("UserLoginInfo") == null) {
 			return false;
-		}else {
+		} else {
 			return true;
 		}
 	}
 
 	@Override
 	public Long getUserLeve(String uid) {
-		UserInfo user=userInfoDao.findUserByAccount(uid);
-		if(user==null){
+		UserInfo user = userInfoDao.findUserByAccount(uid);
+		if (user == null) {
 			return null;
-		}else {
+		} else {
 			return user.getLevel();
 		}
 	}
@@ -183,36 +180,53 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public Object syncUserDate(UserRequestParameter parameter) {
-		UserInfo user=userInfoDao.findUserByAccount(parameter.getUid());
-		if(user==null){
-			return "找不到用户:"+parameter.getUid();
+		UserInfo user = userInfoDao.findUserByAccount(parameter.getUid());
+		if (user == null) {
+			return "找不到用户:" + parameter.getUid();
 		}
-		
-		if((user.getSyncTime()==null||user.getSyncTime().before(parameter.getSyncTime()))&&parameter.getRecords()!=null&&parameter.getRecords().size()>0){
-			Set<UserAccessRecord> recordList=new HashSet<UserAccessRecord>();
-			if(parameter.getRecords()==null){
-				return "服务器上没有找到记录";
-			}
-			
-			for(int i=0;i<parameter.getRecords().size();i++){
-				UserRecordVO vo=parameter.getRecords().get(i);
-				UserAccessRecord uar=new UserAccessRecord();
+
+		if ((user.getSyncTime() == null || user.getSyncTime().before(
+				parameter.getSyncTime()))
+				&& parameter.getRecordContent() != null
+				&& parameter.getRecordContent().length() > 0) {
+			Set<UserAccessRecord> recordList = new HashSet<UserAccessRecord>();
+			System.out.println("__"+parameter.getRecordContent());
+			// 123123[_]2014-09-09 12:121[/br]123123[_]2014-09-09 12:121[/br]
+			String[] recordVOStr = parameter.getRecordContent().split("[/br]");
+			for (String str : recordVOStr) {
+				System.out.println("______"+recordVOStr.length);
+				UserRecordVO recordVO = new UserRecordVO();
+				String[] result = str.split("[_]");
+				recordVO.setEventKey(result[0]);// id
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date=null;
+				try {
+					System.out.println(result[1]);
+					date = sdf.parse(result[1]);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				recordVO.setAccessDate(date);// date
+				UserAccessRecord uar = new UserAccessRecord();
 				uar.setCreateDate(new Date());
 				uar.setUserInfo(user);
-				uar.setEventKey(vo.getEventKey());
-				uar.setAccessDate(vo.getAccessDate());
+				uar.setEventKey(recordVO.getEventKey());
+				uar.setAccessDate(recordVO.getAccessDate());
 				recordList.add(uar);
 			}
-			if(userRecordService.deleteAllRecordByAccount(user.getAccount())){
+			if (userRecordService.deleteAllRecordByAccount(user.getAccount())) {
 				user.setUserAccessRecord(recordList);
 				userInfoDao.save(user);
 				return "complete";
-			}else {
+			} else {
 				return "服务器异常";
 			}
 
-		}else if((parameter.getSyncTime()==null||user.getSyncTime().after(user.getSyncTime()))&&user.getUserAccessRecord().size()>0){
-			Set<UserAccessRecord> recordList=user.getUserAccessRecord();
+		} else if ((parameter.getSyncTime() == null || user.getSyncTime()
+				.after(user.getSyncTime()))
+				&& user.getUserAccessRecord().size() > 0) {
+			Set<UserAccessRecord> recordList = user.getUserAccessRecord();
 			for (UserAccessRecord userAccessRecord : recordList) {
 				userAccessRecord.getEventKey();
 				System.out.println("___good! haved data");
@@ -221,7 +235,5 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 		return "failed";
 	}
-
-	
 
 }

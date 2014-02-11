@@ -164,7 +164,7 @@ public class UserAction extends ActionSupport {
 			jsonError = SoryinJsonUtil.convertToFormatStr("传来错误的参数");
 			resultData = SoryinJsonUtil.addState(jsonError, State.Error);
 			this.setJsonResult(resultData);
-			return "getUserLevel";
+			return "syncUserDate";
 		}
 		
 		Object result=userInfoService.syncUserDate(userRequestParameter);

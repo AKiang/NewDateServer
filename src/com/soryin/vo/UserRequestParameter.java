@@ -2,7 +2,6 @@ package com.soryin.vo;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author donghai
@@ -16,10 +15,16 @@ public class UserRequestParameter implements Serializable{
 	private UserActionRquestType taskType;
 	private String uid;
 	private String levelNum;
-	private List<UserRecordVO> records;
 	private UserSettingVO setting;
 	private Date syncTime;
 	private String userName;
+	private String recordContent;
+	public String getRecordContent() {
+		return recordContent;
+	}
+	public void setRecordContent(String recordContent) {
+		this.recordContent = recordContent;
+	}
 	public String getLevelNum() {
 		return levelNum;
 	}
@@ -41,12 +46,6 @@ public class UserRequestParameter implements Serializable{
 	public void setLevelNum(String levelNum) {
 		this.levelNum = levelNum;
 	} 
-	public List<UserRecordVO> getRecords() {
-		return records;
-	}
-	public void setRecords(List<UserRecordVO> records) {
-		this.records = records;
-	}
 	public void setSetting(UserSettingVO setting) {
 		this.setting = setting;
 	}
