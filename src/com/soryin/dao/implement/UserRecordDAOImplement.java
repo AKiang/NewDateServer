@@ -2,6 +2,8 @@ package com.soryin.dao.implement;
 
 import java.util.List;
 
+import org.hibernate.SQLQuery;
+
 import com.soryin.dao.UserRecordDAO;
 import com.soryin.entity.UserAccessRecord;
 
@@ -15,4 +17,13 @@ public class UserRecordDAOImplement extends BaseDAOImpl<UserAccessRecord> implem
 		return accessRecords;
 	}
 	
+	public void deleteRecord(Long id)
+	{
+		this.getSession().beginTransaction();
+		SQLQuery query=this.getSession().createSQLQuery("delete from UserAccessRecord where id=?");
+		query.setParameter("id", id);
+		query.executeUpdate();
+		this.getSession().getTransaction().commit();
+
+	}
 }
