@@ -46,10 +46,4 @@ public class SoryinJsonUtil {
 		return strbuffer.toString();
 	}
 	
-	public static JSON addElementBy(String str,JSON json){
-		
-		
-		
-		return json;
-	}
 }

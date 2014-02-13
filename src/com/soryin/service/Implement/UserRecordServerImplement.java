@@ -1,6 +1,9 @@
 package com.soryin.service.Implement;
 
+import java.util.List;
+
 import com.soryin.dao.UserRecordDAO;
+import com.soryin.entity.UserAccessRecord;
 import com.soryin.service.UserRecordService;
 
 public class UserRecordServerImplement implements UserRecordService{
@@ -14,12 +17,24 @@ public class UserRecordServerImplement implements UserRecordService{
 	
 	@Override
 	public boolean deleteAllRecordByAccount(String account) {
+		List<UserAccessRecord> recordList=null;
 		try {
-			return userRecordDAO.delelteAllRecordByAccount(account);
+			recordList=userRecordDAO.getRecordListByAccount(account); 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
+		try {
+			for (int i = 0; i < recordList.size(); i++) {
+				userRecordDAO.delete(recordList.get(i).getId());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
+	
+	
 	
 }

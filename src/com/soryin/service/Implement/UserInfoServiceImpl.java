@@ -22,6 +22,7 @@ import com.soryin.enumeration.SoryinEnum.UserLoginType;
 import com.soryin.service.UserInfoService;
 import com.soryin.service.UserRecordService;
 import com.soryin.vo.UserActionRquestType;
+import com.soryin.vo.UserRecordDownVO;
 import com.soryin.vo.UserRecordVO;
 import com.soryin.vo.UserRequestParameter;
 
@@ -184,7 +185,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (user == null) {
 			return "找不到用户:" + parameter.getUid();
 		}
-		if ((user.getSyncTime() == null || (parameter.getSyncTime()!=null&&user.getSyncTime().before(
+		if ((user.getSyncTime() == null&&parameter.getSyncTime()!=null || (user.getSyncTime()!=null&&parameter.getSyncTime()!=null&&user.getSyncTime().before(
 				parameter.getSyncTime())))
 				&& parameter.getRecordContent() != null
 				&& parameter.getRecordContent().length() > 0) {
@@ -221,19 +222,34 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return "服务器异常";
 			}
 
-		} else if ((parameter.getSyncTime() == null || user.getSyncTime()
+		} else if (parameter.getSyncTime() == null&&user.getSyncTime()!=null ||(parameter.getSyncTime()!=null&&user.getSyncTime()!=null&&user.getSyncTime()
 				.after(parameter.getSyncTime()))
 				&& user.getUserAccessRecord().size() > 0) {
+			UserRecordDownVO downVO=new UserRecordDownVO();
 			Set<UserAccessRecord> recordList = user.getUserAccessRecord();
 			for (UserAccessRecord userAccessRecord : recordList) {
 				userAccessRecord.getEventKey();
 				System.out.println("下载到手机成功");
 			}
-			return recordList;
+//			System.out.println("——————同步成功"+user.getSyncTime()+"___"+parameter.getSyncTime());
+//			System.out.println("-----");
+			downVO.setAccessRecords(recordList);
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+			if(user.getSyncTime()==null){
+				user.setSyncTime(new Date());
+			}
+			downVO.setSyncTime(sdf.format(user.getSyncTime()));
+
+			return downVO;
 		}
-		System.out.println("没有同步"+user.getSyncTime()+"___"+parameter.getSyncTime()+"||||"+user.getSyncTime().getTime()+"||||"+parameter.getSyncTime().getTime());
-		System.out.println("-----");
-		System.out.println((user.getSyncTime().before(parameter.getSyncTime()))+"__"+(user.getSyncTime().after(parameter.getSyncTime())));
+		System.out.println((user.getSyncTime()==null)+"___"+(parameter.getSyncTime()==null));
+		if(user.getSyncTime()!=null&&(parameter.getSyncTime()!=null)){
+			System.out.println((user.getSyncTime().before(parameter.getSyncTime()))+"__"+(user.getSyncTime().after(parameter.getSyncTime())));
+			System.out.println("没有同步"+user.getSyncTime()+"___"+parameter.getSyncTime()+"||||"+user.getSyncTime().getTime()+"||||"+parameter.getSyncTime().getTime());
+		}
+//		System.out.println("没有同步"+user.getSyncTime()+"___"+parameter.getSyncTime()+"||||"+user.getSyncTime().getTime()+"||||"+parameter.getSyncTime().getTime());
+//		System.out.println("-----");
+//		System.out.println((user.getSyncTime().before(parameter.getSyncTime()))+"__"+(user.getSyncTime().after(parameter.getSyncTime())));
 		
 		return "failed";
 	}

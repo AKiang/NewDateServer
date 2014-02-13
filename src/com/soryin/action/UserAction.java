@@ -175,6 +175,7 @@ public class UserAction extends ActionSupport {
 			}else {
 				resultData=SoryinJsonUtil.addState(resultStr, State.Error);
 			}
+			
 		}else {
 			resultData=SoryinJsonUtil.addState(result, State.Success);
 		}

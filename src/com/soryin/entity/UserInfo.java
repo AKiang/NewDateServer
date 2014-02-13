@@ -107,7 +107,7 @@ public class UserInfo implements Serializable {
 	}
 	
 	@JSONField(serialize=false)
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "groupMangerID")
 	public GroupManager getGroupManager() {
 		return groupManager;

@@ -1,7 +1,9 @@
 package com.soryin.dao;
 
+import java.util.List;
+
 import com.soryin.entity.UserAccessRecord;
 
 public interface UserRecordDAO extends BaseDAO<UserAccessRecord>{
-	public boolean delelteAllRecordByAccount(String account);
+	public List<UserAccessRecord> getRecordListByAccount(String account);
 }

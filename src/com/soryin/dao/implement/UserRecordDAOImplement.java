@@ -8,19 +8,11 @@ import com.soryin.entity.UserAccessRecord;
 public class UserRecordDAOImplement extends BaseDAOImpl<UserAccessRecord> implements UserRecordDAO{
 
 	@Override
-	public boolean delelteAllRecordByAccount(String account) {
+	public List<UserAccessRecord> getRecordListByAccount(String account) {
 		String hql="";
 		hql="from  UserAccessRecord as u  where u.userInfo.account=?";
 		List<UserAccessRecord> accessRecords= this.findByHQL(hql, account);
-		try {
-			for (UserAccessRecord userAccessRecord : accessRecords) {
-				//this.delete(userAccessRecord.getId());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		return accessRecords;
 	}
 	
 }
