@@ -215,9 +215,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 			System.out.println("上传数据到服务器成功");
 			if (userRecordService.deleteAllRecordByAccount(user.getAccount())) {
 				user.setUserAccessRecord(recordList);
+				
 				user.setSyncTime(parameter.getSyncTime());
 				userInfoDao.update(user);
-				return "complete";
+				user=userInfoDao.findById(user.getId());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String date=null;
+				date = sdf.format(user.getSyncTime());
+				System.out.println("syncTime:"+date);
+				return "complete:"+date;
 			} else {
 				return "服务器异常";
 			}
@@ -231,8 +237,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 				userAccessRecord.getEventKey();
 				System.out.println("下载到手机成功");
 			}
-//			System.out.println("——————同步成功"+user.getSyncTime()+"___"+parameter.getSyncTime());
-//			System.out.println("-----");
+			System.out.println("——————同步成功"+user.getSyncTime()+"___"+parameter.getSyncTime());
+			System.out.println("-----");
 			downVO.setAccessRecords(recordList);
 			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 			if(user.getSyncTime()==null){

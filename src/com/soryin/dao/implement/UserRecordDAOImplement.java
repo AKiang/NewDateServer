@@ -21,7 +21,7 @@ public class UserRecordDAOImplement extends BaseDAOImpl<UserAccessRecord> implem
 	{
 		this.getSession().beginTransaction();
 		SQLQuery query=this.getSession().createSQLQuery("delete from UserAccessRecord where id=?");
-		query.setParameter("id", id);
+		query.setParameter(0, id);
 		query.executeUpdate();
 		this.getSession().getTransaction().commit();
 
